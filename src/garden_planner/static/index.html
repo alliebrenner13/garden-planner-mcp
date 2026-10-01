@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Garden Ledger</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,560;0,9..144,700;1,9..144,420&family=Outfit:wght@380;450;560&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/styles.css?v=5" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="shell">
+      <aside class="rail">
+        <div class="brand">
+          <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+            <rect x="6" y="28" width="36" height="12" rx="2" fill="#5c3d2e" />
+            <path d="M24 8c-2 8-10 12-10 20 6-2 10-6 10-12 0 6 4 10 10 12 0-8-8-12-10-20z" fill="#6f8f4e" />
+            <circle cx="24" cy="26" r="3" fill="#d4a24a" />
+          </svg>
+          <div>
+            <p class="eyebrow" id="rail-place">Home garden</p>
+            <h1>The Garden Ledger</h1>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="nav-btn is-active" data-view="today">Today</button>
+          <button class="nav-btn" data-view="beds">Beds</button>
+          <button class="nav-btn" data-view="catalog">Catalog</button>
+        </nav>
+        <p class="rail-note">A planting journal with frost sense. Same log Claude uses.</p>
+      </aside>
+
+      <main class="stage">
+        <header class="top">
+          <div>
+            <p class="kicker" id="season-kicker">Loading the garden…</p>
+            <h2 id="page-title">Today in the beds</h2>
+          </div>
+          <div class="top-actions">
+            <button class="btn ghost" id="edit-cancel" type="button" hidden>Cancel</button>
+            <button class="btn ghost" id="edit-toggle" type="button">Edit</button>
+            <button class="btn primary" id="add-open" type="button">Log a planting</button>
+          </div>
+        </header>
+
+        <div id="alert" class="alert" hidden></div>
+
+        <section id="view-today" class="view is-visible">
+          <div class="hero-grid">
+            <article class="panel frost-panel" id="frost-card">
+              <p class="panel-label">Frost watch</p>
+              <div id="frost-body" class="frost-body">Reading the nights…</div>
+            </article>
+            <article class="panel season-panel" id="season-card">
+              <p class="panel-label">This plot</p>
+              <div id="plot-read" class="plot-read"></div>
+              <form id="plot-form" class="plot-form" autocomplete="off" hidden>
+                <p class="plot-season" id="plot-season"></p>
+                <label>
+                  Plot name
+                  <input name="place" type="text" placeholder="Garden name" />
+                </label>
+                <label>
+                  Aspect
+                  <input name="aspect" type="text" placeholder="East-facing" />
+                </label>
+                <label>
+                  Sun
+                  <input name="sun" type="text" placeholder="Full sun most of the day" />
+                </label>
+                <p class="muted" id="frost-countdown"></p>
+                <div class="stat-row plot-stats">
+                  <label>
+                    Last spring frost
+                    <input name="last_spring_frost" type="text" placeholder="April 15, 2026" />
+                  </label>
+                  <label>
+                    First fall frost
+                    <input name="first_fall_frost" type="text" placeholder="October 20, 2026" />
+                  </label>
+                  <label>
+                    Garden frost (°F)
+                    <input name="frost_threshold_f" type="number" step="0.1" placeholder="32" />
+                  </label>
+                </div>
+              </form>
+            </article>
+          </div>
+          <article class="panel">
+            <div class="panel-head">
+              <p class="panel-label">Week of weather</p>
+              <p class="muted" id="forecast-meta"></p>
+            </div>
+            <div id="forecast-strip" class="forecast"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head">
+              <p class="panel-label">Beds at a glance</p>
+              <button class="text-btn" data-view="beds" type="button">See every planting</button>
+            </div>
+            <div id="today-plantings" class="beds-stack"></div>
+          </article>
+        </section>
+
+        <section id="view-beds" class="view">
+          <div class="toolbar">
+            <div class="chips" id="status-chips">
+              <button class="chip is-on" data-status="" type="button">All</button>
+              <button class="chip" data-status="planted" type="button">Planted</button>
+              <button class="chip" data-status="planned" type="button">Planned</button>
+              <button class="chip" data-status="harvested" type="button">Harvested</button>
+              <button class="chip" data-status="failed" type="button">Failed</button>
+            </div>
+          </div>
+          <div id="beds-grid" class="beds-stack"></div>
+        </section>
+
+        <section id="view-catalog" class="view">
+          <p class="lede">
+            Kitchen crops, herbs, and companions for this plot, with the nights they can take
+            and the dates this climate usually allows. Click a plant to see this year’s window.
+          </p>
+          <div id="catalog-grid" class="catalog-grid"></div>
+          <article class="panel window-panel" id="window-card" hidden>
+            <p class="panel-label" id="window-title">Planting window</p>
+            <div id="window-body"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+    <aside class="drawer" id="drawer" hidden>
+      <div class="drawer-head">
+        <div>
+          <p class="eyebrow" id="drawer-kicker">New entry</p>
+          <h3 id="drawer-title">Log a planting</h3>
+        </div>
+        <button class="icon-btn" id="drawer-close" type="button" aria-label="Close">×</button>
+      </div>
+      <form id="planting-form">
+        <input type="hidden" name="id" />
+        <fieldset>
+          <legend>Plant</legend>
+          <div id="plant-picker" class="plant-picker"></div>
+          <input type="hidden" name="plant_name" required />
+        </fieldset>
+        <label>
+          Date planted
+          <span class="hint">9/11/26, 09-11-2026, or use the calendar</span>
+          <div class="date-row">
+            <input name="planted_on" type="text" placeholder="September 11, 2026" autocomplete="off" required />
+            <input id="planted-picker" type="date" aria-label="Pick a date" />
+          </div>
+        </label>
+        <div class="split">
+          <label>
+            Variety
+            <input name="variety" type="text" placeholder="Lacinato, Brandywine…" />
+          </label>
+          <label>
+            Quantity
+            <input name="quantity" type="number" min="1" step="1" placeholder="6" />
+          </label>
+        </div>
+        <label>
+          Bed
+          <input name="bed" type="text" placeholder="Front bed, cold frame…" />
+        </label>
+        <label>
+          Status
+          <select name="status">
+            <option value="planted">Planted</option>
+            <option value="planned">Planned</option>
+            <option value="harvested">Harvested</option>
+            <option value="failed">Failed</option>
+          </select>
+        </label>
+        <label>
+          Notes
+          <textarea name="notes" rows="3" placeholder="Mulched, started indoors, first real leaves…"></textarea>
+        </label>
+        <label id="harvest-field" hidden>
+          Harvested on
+          <input name="harvested_on" type="text" placeholder="Optional" />
+        </label>
+        <p class="form-error" id="form-error" hidden></p>
+        <div class="drawer-actions">
+          <button class="btn primary" type="submit">Save in the ledger</button>
+          <button class="btn ghost" id="drawer-cancel" type="button">Cancel</button>
+        </div>
+      </form>
+    </aside>
+
+    <div class="setup-overlay" id="setup-overlay" hidden>
+      <form class="setup-card" id="setup-form" autocomplete="off">
+        <p class="eyebrow">Welcome</p>
+        <h2 id="setup-title">Where is your garden?</h2>
+        <p class="lede" id="setup-lede">
+          Weather and frost dates stay on this computer. Search a city or ZIP, then tell us about the beds.
+        </p>
+
+        <section class="setup-step" data-setup-step="1">
+          <label>
+            City, town, or ZIP
+            <span class="hint">Add a state or country if the name is common</span>
+            <div class="date-row">
+              <input id="setup-query" type="text" placeholder="Austin, TX" />
+              <button class="btn ghost" id="setup-search" type="button">Search</button>
+            </div>
+          </label>
+          <div id="setup-places" class="place-list"></div>
+          <input type="hidden" name="latitude" />
+          <input type="hidden" name="longitude" />
+          <input type="hidden" name="timezone" />
+          <p class="muted" id="setup-picked"></p>
+        </section>
+
+        <section class="setup-step" data-setup-step="2" hidden>
+          <label>
+            Garden name
+            <input name="place" type="text" placeholder="Backyard, 22151, community plot…" />
+          </label>
+          <label>
+            Aspect
+            <input name="aspect" type="text" placeholder="South-facing, east morning sun…" />
+          </label>
+          <label>
+            Sun
+            <input name="sun" type="text" placeholder="Full sun most of the day" />
+          </label>
+          <div class="split">
+            <label>
+              Last spring frost
+              <input name="last_spring_frost" type="text" placeholder="April 15" />
+            </label>
+            <label>
+              First fall frost
+              <input name="first_fall_frost" type="text" placeholder="October 20" />
+            </label>
+          </div>
+          <label>
+            Garden frost (°F)
+            <input name="frost_threshold_f" type="number" step="0.1" value="32" />
+          </label>
+        </section>
+
+        <section class="setup-step" data-setup-step="3" hidden>
+          <p class="muted">Add what is in the ground now. You can skip this and log plantings later.</p>
+          <div id="setup-plantings" class="setup-plantings"></div>
+          <button class="text-btn" id="setup-add-planting" type="button">Add another planting</button>
+        </section>
+
+        <p class="form-error" id="setup-error" hidden></p>
+        <div class="drawer-actions">
+          <button class="btn ghost" id="setup-back" type="button" hidden>Back</button>
+          <button class="btn primary" id="setup-next" type="button">Next</button>
+        </div>
+      </form>
+    </div>
+
+    <script src="/static/app.js?v=5"></script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "garden-planner"
+version = "0.1.0"
+description = "Local garden journal with frost checks, weather, and an MCP server for Claude"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+  "fastmcp>=2.0,<3",
+  "httpx>=0.27",
+  # win_arm64 has binary wheels through 46.x; 50.x tries to compile rust/msvc
+  "cryptography>=46,<47",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+garden-planner = "garden_planner.server:main"
+garden-planner-web = "garden_planner.web:main"
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/garden_planner/static" = "garden_planner/static"
+"prompts/garden-setup.md" = "garden_planner/setup_prompt.md"
+
+[tool.hatch.build]
+dev-mode-dirs = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/garden_planner"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = [
+  "network: tests that call Open-Meteo over the network",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/garden_planner",
+  "prompts",
+  "config.example.toml",
+  "README.md",
+  "LICENSE",
+]

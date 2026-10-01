@@ -1,0 +1,17 @@
+# Example only. The app writes a private config.toml during first-run setup.
+# Do not put real coordinates in a public fork.
+
+[location]
+latitude = 40.7128
+longitude = -74.0060
+timezone = "America/New_York"
+
+[frost]
+last_spring = "04-15"
+first_fall = "10-20"
+threshold_c = 0.0
+
+[garden]
+name = "Home garden"
+aspect = "South-facing"
+sun = "Full sun most of the day"
